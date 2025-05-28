@@ -1,5 +1,5 @@
 {
-  "name": "adblocker",
+  "name": "ads-blocker",
   "version": "1.0.0",
   "description": "ads blocker proxy server",
   "main": "src/server.js",
