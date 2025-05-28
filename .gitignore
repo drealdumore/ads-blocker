@@ -67,8 +67,8 @@ jspm_packages/
 .dynamodb/
 
 # Data files
-src/data/blocklists/*.txt
-!src/data/blocklists/.gitkeep
+# src/data/blocklists/*.txt
+# !src/data/blocklists/.gitkeep
 
 # IDE
 .vscode/

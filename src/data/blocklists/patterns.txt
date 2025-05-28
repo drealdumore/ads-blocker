@@ -1,0 +1,9 @@
+/ads/
+/advertising/
+/banner/
+/popup/
+/tracking/
+googleads
+facebook.*ads
+amazon.*ads
+twitter.*ads
