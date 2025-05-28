@@ -1,0 +1,99 @@
+🔍 WHAT EXACTLY HAPPENS WHEN YOU VISIT: http://localhost:3000/?url=https://nkiri.com
+
+========================================================================================================
+
+When you make this request, here's the EXACT FLOW:
+
+STEP 1: Ad Blocking Check
+-------------------------
+1. Server receives: GET /?url=https://nkiri.com
+2. Ad Blocker Middleware extracts: targetUrl = "https://nkiri.com"
+3. Checks against 34,000+ blocked domains in memory
+4. Checks against pattern blocklist (ads/, banner/, tracking/, etc.)
+5. Result: ALLOW (nkiri.com is not in ad blocklists)
+
+STEP 2: Proxy the Request
+------------------------
+6. Proxy Middleware takes over
+7. Makes HTTP request TO: https://nkiri.com
+8. Downloads the full HTML page from nkiri.com
+9. Returns the HTML content back to you
+
+STEP 3: What You Get Back
+------------------------
+- Full HTML page from nkiri.com
+- All CSS/JS references in the HTML
+- BUT: Any subsequent requests (images, scripts, ads) from that page would ALSO need to go through the proxy to be filtered
+
+🚫 IF NKIRI.COM HAD ADS:
+========================
+
+Let's say nkiri.com's HTML contains:
+<script src="https://doubleclick.net/ads.js"></script>
+<img src="https://googlesyndication.com/banner.jpg">
+
+When these requests hit the proxy:
+- /?url=https://doubleclick.net/ads.js → BLOCKED (returns 204)
+- /?url=https://googlesyndication.com/banner.jpg → BLOCKED (returns 204)
+
+📜 ABOUT scripts/start.sh - WHEN TO USE IT:
+==========================================
+
+The startup script is for PRODUCTION DEPLOYMENT. Use it when:
+
+✅ When to Use start.sh:
+1. First-time setup on a new server
+2. Production deployment
+3. Server restarts after maintenance
+4. When you want automated setup
+
+🔧 What start.sh Does:
+#!/bin/bash
+echo "🚀 Starting Express Ads Blocker..."
+
+# 1. Checks if Node.js is installed
+# 2. Creates necessary directories (logs/, src/data/blocklists/)
+# 3. Copies .env.example to .env if missing
+# 4. Installs npm dependencies if needed
+# 5. Starts the server with npm start
+
+💡 Usage Examples:
+
+For Development (what you've been doing):
+npm start  # Direct start, assumes everything is set up
+
+For Production/First Setup:
+chmod +x scripts/start.sh
+./scripts/start.sh  # Full automated setup + start
+
+For Production with Process Manager:
+# Use PM2 instead for production
+pm2 start src/server.js --name "ads-blocker"
+
+🌐 REAL-WORLD USAGE EXAMPLE:
+===========================
+
+If you wanted to browse nkiri.com through the ad blocker:
+
+1. The browser: Makes request to http://localhost:3000/?url=https://nkiri.com
+2. The server:
+   - Checks nkiri.com (✅ allowed)
+   - Fetches content from nkiri.com
+   - Returns clean HTML to browser
+3. Browser renders the page
+4. Any ad requests in that page would be blocked if they also go through the proxy
+
+🔧 FOR COMPLETE AD BLOCKING:
+===========================
+
+You'd need a browser extension or proxy configuration that routes ALL requests through the server:
+
+// Browser extension example
+fetch('http://localhost:3000/?url=' + encodeURIComponent(originalUrl))
+
+========================================================================================================
+
+SUMMARY:
+- The script is for deployment automation
+- The URL parameter is for proxying requests through the ad blocker
+- The server acts as an intelligent middleman that filters out ads before returning content
